@@ -13,6 +13,9 @@ public class GitFlow {
     public static void main(String[] args) {
         try {
             String branch = getCurrentGitBranch();
+            if(branch.contains("release")) {
+                branch = "master";
+            }
             System.out.println("Current branch: " + branch);
             List<String> newLines = new ArrayList<String>();
 
