@@ -13,7 +13,7 @@ public class GitFlowScript {
     public static void main(String[] args) {
         try {
             //openFeature("test");
-            closeFeature();
+            //closeFeature();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -64,7 +64,7 @@ public class GitFlowScript {
     public static void executeCommand(String command) throws IOException, InterruptedException {
         boolean isWindows = System.getProperty("os.name")
                 .toLowerCase().startsWith("windows");
-        ProcessBuilder builder = new ProcessBuilder();
+        ProcessBuilder builder = new ProcessBuilder().inheritIO();
         if (isWindows) {
             builder.command("cmd.exe", "/c", command);
         } else {
