@@ -1,11 +1,14 @@
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +17,7 @@ public class GitFlowScript {
         try {
             //openFeature("test");
             //closeFeature();
+            executeCommand("git push");
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -38,6 +42,21 @@ public class GitFlowScript {
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
+    }
+
+    public static void openRelease(String version) throws IOException, InterruptedException {
+        executeCommand("git checkout master && git merge develop");
+        modifyJenkinsfile("master");
+        //MODIFY pom(TAG)
+        executeCommand("git add . && git commit -m \"Avvio release " + version +"\"");
+        executeCommand("git tag " + version + " -m \"Release: " + version +"\"");
+        //git push origin --tags
+        //git push
+        executeCommand("git checkout develop && git merge master");
+        modifyJenkinsfile("develop");
+        //MODIFY pom(TAG)
+        executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
+        //git push
     }
 
 
@@ -74,7 +93,45 @@ public class GitFlowScript {
         int exitCode = process.waitFor();
         printResults(process);
     }
+/*
+    static CompletableFuture<String> readOutStream(InputStream is) {
+        return CompletableFuture.supplyAsync(() -> {
+            try (
+                    InputStreamReader isr = new InputStreamReader(is);
+                    BufferedReader br = new BufferedReader(isr);
+            ) {
+                StringBuilder res = new StringBuilder();
+                String inputLine;
+                while ((inputLine = br.readLine()) != null) {
+                    res.append(inputLine).append(System.lineSeparator());
+                }
+                return res.toString();
+            } catch (Throwable e) {
+                throw new RuntimeException("problem with executing program", e);
+            }
+        });
+    }
 
+    public static void executeFutureCommand(String command) throws IOException, InterruptedException {
+        Process p = Runtime.getRuntime().exec(command);
+        CompletableFuture<String> soutFut = readOutStream(p.getInputStream());
+        CompletableFuture<String> serrFut = readOutStream(p.getErrorStream());
+        CompletableFuture<String> resultFut =
+                soutFut.thenCombine(serrFut, (stdout, stderr) -> {
+                    // print to current stderr the stderr of process and return the stdout
+                    System.err.println(stderr);
+
+                    return stdout;
+                });
+// get stdout once ready, blocking
+        try {
+            String result = resultFut.get();
+            System.out.println(result);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+*/
 
     public static void modifyJenkinsfile(String branch) throws IOException {
         List<String> newLines = new ArrayList<String>();
