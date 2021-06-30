@@ -4,8 +4,7 @@
 
     <groupId>testgitflow</groupId>
     <artifactId>test</artifactId>
-    <version>1.1.7-SNAPSHOT</version>
-
+    <version>1.1.6-SNAPSHOT</version>
 
 
     <build>
@@ -27,7 +26,6 @@
             <username>USERNAME_FOR_A_GIT_USER</username>
             <password>PASSWORD_FOR_A_GIT_USER</password>
             <noDeploy>true</noDeploy>
-            <squash>true</squash>
             <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
         </configuration>
     </plugin>
