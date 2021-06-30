@@ -17,6 +17,8 @@ public class GitFlow {
 
             if(branch.contains("release")) {
                 branch = "master";
+            } else if (branch.contains("master")) {
+                branch = "develop";
             }
             System.out.println("Current branch: " + branch);
 
