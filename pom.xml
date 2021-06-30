@@ -12,8 +12,7 @@
     <build>
 
         <plugins>
-<plugins>
-				<plugin>
+<plugin>
         <groupId>external.atlassian.jgitflow</groupId>
         <artifactId>jgitflow-maven-plugin</artifactId>
         <version>1.0-m5.1</version>
@@ -33,7 +32,6 @@
             <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
         </configuration>
     </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
