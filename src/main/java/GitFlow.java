@@ -19,8 +19,7 @@ public class GitFlow {
             System.out.println(isWindows);
             ProcessBuilder builder = new ProcessBuilder();
             if (isWindows) {
-                builder.command("cmd.exe", "/C", "git add . && git commit -m \"Modifica versione pom\" && git status");
-                //builder.command("cmd.exe", "/C", "git add . && git commit -m 'Modifica versione pom' && git status");
+                builder.command("cmd.exe", "/C", "git add . && git commit -m \"Modifica versione pom\"");
             } else {
                 builder.command("sh", "-c", "ls");
             }
