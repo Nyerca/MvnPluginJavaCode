@@ -52,6 +52,7 @@ public class GitFlowScript {
         System.out.println("FEATURE: git checkout develop && git merge " + name);
         executeCommand("git checkout develop && git merge " + name);
         modifyJenkinsfile("develop");
+        executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
     public static void executeCommand(String command) throws IOException, InterruptedException {
