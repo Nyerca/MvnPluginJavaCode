@@ -44,13 +44,13 @@ public class GitFlowScript {
     public static void openFeature(String name) throws IOException, InterruptedException {
         executeCommand("git checkout -b feature/" + name);
         modifyJenkinsfile("feature/" + name);
+        executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
     public static void closeFeature() throws IOException, InterruptedException {
         String name = getCurrentGitBranch();
         executeCommand("git checkout develop && git merge feature/" + name);
         modifyJenkinsfile("develop");
-
     }
 
     public static void executeCommand(String command) throws IOException, InterruptedException {
