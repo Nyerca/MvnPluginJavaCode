@@ -6,8 +6,6 @@
     <artifactId>test</artifactId>
     <version>1.1.5</version>
 
-
-
     <build>
 
         <plugins>
@@ -27,7 +25,6 @@
             <username>USERNAME_FOR_A_GIT_USER</username>
             <password>PASSWORD_FOR_A_GIT_USER</password>
             <noDeploy>true</noDeploy>
-            <squash>true</squash>
             <scmCommentPrefix>[RELEASE] </scmCommentPrefix>
         </configuration>
     </plugin>
