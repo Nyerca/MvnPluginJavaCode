@@ -14,18 +14,6 @@ public class GitFlow {
     public static void main(String[] args) {
         try {
             String branch = getCurrentGitBranch();
-            boolean isWindows = System.getProperty("os.name")
-                    .toLowerCase().startsWith("windows");
-            System.out.println(isWindows);
-            ProcessBuilder builder = new ProcessBuilder();
-            if (isWindows) {
-                builder.command("cmd.exe", "/C", "git add . && git commit -m \"Modifica versione pom\"");
-            } else {
-                builder.command("sh", "-c", "ls");
-            }
-            Process process = builder.start();
-            int exitCode = process.waitFor();
-            printResults(process);
 
             if(branch.contains("release")) {
                 branch = "master";
@@ -45,6 +33,18 @@ public class GitFlow {
                 }
             }
             Files.write(Paths.get("Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
+
+            boolean isWindows = System.getProperty("os.name")
+                    .toLowerCase().startsWith("windows");
+            ProcessBuilder builder = new ProcessBuilder();
+            if (isWindows) {
+                builder.command("cmd.exe", "/C", "git add . && git commit -m \"Modifica versione pom\"");
+            } else {
+                builder.command("sh", "-c", "ls");
+            }
+            Process process = builder.start();
+            int exitCode = process.waitFor();
+            printResults(process);
 
 
         } catch (IOException e) {
