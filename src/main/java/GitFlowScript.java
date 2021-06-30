@@ -49,8 +49,8 @@ public class GitFlowScript {
 
     public static void closeFeature() throws IOException, InterruptedException {
         String name = getCurrentGitBranch();
-        System.out.println("FEATURE: git checkout develop && git merge feature/" + name);
-        executeCommand("git checkout develop && git merge feature/" + name);
+        System.out.println("FEATURE: git checkout develop && git merge " + name);
+        executeCommand("git checkout develop && git merge " + name);
         modifyJenkinsfile("develop");
     }
 
