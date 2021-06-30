@@ -19,6 +19,7 @@ public class GitFlow {
                 branch = "master";
             }
             System.out.println("Current branch: " + branch);
+            /*
             List<String> newLines = new ArrayList<String>();
 
             for (String line : Files.readAllLines(Paths.get("Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
@@ -45,6 +46,7 @@ public class GitFlow {
             Process process = builder.start();
             int exitCode = process.waitFor();
             printResults(process);
+            */
 
 
         } catch (IOException e) {
@@ -52,6 +54,7 @@ public class GitFlow {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
 
     }
 
