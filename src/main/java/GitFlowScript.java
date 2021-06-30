@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 public class GitFlowScript {
     public static void main(String[] args) {
         try {
-            //openFeature("test");
-            closeFeature();
+            openFeature("test");
+            //closeFeature();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
@@ -47,12 +47,18 @@ public class GitFlowScript {
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
-    public static void closeFeature() throws IOException, InterruptedException {
+    public static void mergeFeature() throws IOException, InterruptedException {
         String name = getCurrentGitBranch();
         System.out.println("FEATURE: git checkout develop && git merge " + name);
         executeCommand("git checkout develop && git merge " + name);
         modifyJenkinsfile("develop");
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
+    }
+
+    public static void closeFeature() throws IOException, InterruptedException {
+        String name = getCurrentGitBranch();
+        mergeFeature();
+        executeCommand("git branch -D " + name);
     }
 
     public static void executeCommand(String command) throws IOException, InterruptedException {
