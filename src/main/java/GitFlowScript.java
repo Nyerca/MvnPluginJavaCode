@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 public class GitFlowScript {
     public static void main(String[] args) {
         try {
-            openFeature("test");
-            //closeFeature();
+            //openFeature("test");
+            closeFeature();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
