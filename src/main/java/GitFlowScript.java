@@ -1,6 +1,11 @@
 import model.Project;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -10,49 +15,42 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
 
 public class GitFlowScript {
     public static void main(String[] args) {
 
-        if(args.length > 0) {
+        if (args.length > 0) {
             System.out.println(args[0]);
             GIT_FUN funzione = asMyEnum(args[0]);
-            if(funzione != null) {
+            if (funzione != null) {
                 try {
-                switch(funzione) {
-                    case feature_start:
-                        if(args.length > 1) {
-                            openFeature(args[1]);
-                        } else {
-                            System.out.println("**** INSERIRE IL NOME DELLA FEATURE DA CREARE ****");
-                        }
-                        break;
-                    case feature_merge:
-                        mergeFeature();
-                        break;
-                    case feature_merge_close:
-                        closeFeature();
-                        break;
-                    case release_start_close:
-                        if(args.length > 1) {
-                            RELEASE_TYPE release = asMyEnumRelease(args[1]);
-                            if(release != null) {
-                                openRelease2(release);
+                    switch (funzione) {
+                        case feature_start:
+                            if (args.length > 1) {
+                                openFeature(args[1]);
                             } else {
-                                System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
+                                System.out.println("**** INSERIRE IL NOME DELLA FEATURE DA CREARE ****");
                             }
-                        } else {
-                            System.out.println("**** INSERIRE IL TIPO DI RELEASE DA CREARE E LA VERSIONE DI DEVELOP ****");
-                        }
-                        break;
-                }
+                            break;
+                        case feature_merge:
+                            mergeFeature();
+                            break;
+                        case feature_merge_close:
+                            closeFeature();
+                            break;
+                        case release_start_close:
+                            if (args.length > 1) {
+                                RELEASE_TYPE release = asMyEnumRelease(args[1]);
+                                if (release != null) {
+                                    openRelease(release);
+                                } else {
+                                    System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
+                                }
+                            } else {
+                                System.out.println("**** INSERIRE IL TIPO DI RELEASE DA CREARE E LA VERSIONE DI DEVELOP ****");
+                            }
+                            break;
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
@@ -100,26 +98,7 @@ public class GitFlowScript {
         return null;
     }
 
-    public static void openRelease(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException {
-        String masterVersion = devVersion.split("-SNAPSHOT")[0];
-        String newDevVersion = findDevelopNewVersion(type, devVersion);
-        System.out.println("MASTER_V: " + masterVersion + " DEV_V: " + newDevVersion);
-
-        executeCommand("git checkout master && git merge develop");
-        modifyJenkinsfile("master");
-        readPOMVersion(devVersion, masterVersion);
-        executeCommand("git add . && git commit -m \"Avvio release " + masterVersion + "\"");
-        executeCommand("git tag " + masterVersion + " -m \"Release: " + masterVersion + "\"");
-        //git push origin --tags
-        //git push
-        executeCommand("git checkout develop && git merge master");
-        modifyJenkinsfile("develop");
-        readPOMVersion(masterVersion, newDevVersion);
-        executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
-        //git push
-    }
-
-    public static void openRelease2(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
+    public static void openRelease(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
 
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
@@ -157,7 +136,7 @@ public class GitFlowScript {
 
     public static String findDevelopNewVersion(RELEASE_TYPE type, String oldVersion) {
         String returnVersion;
-        if(oldVersion.contains("-SNAPSHOT")) {
+        if (oldVersion.contains("-SNAPSHOT")) {
             return oldVersion.split("-SNAPSHOT")[0];
         }
         String[] splitted = oldVersion.split("\\.");
@@ -200,19 +179,6 @@ public class GitFlowScript {
             }
         }
         Files.write(Paths.get("Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
-    }
-
-    public static void readPOMVersion(String pomVersion, String newPomVersion) throws IOException {
-        List<String> newLines = new ArrayList<String>();
-
-        for (String line : Files.readAllLines(Paths.get("pom.xml"), StandardCharsets.UTF_8)) {
-            if (line.contains("<version>" + pomVersion + "</version>")) {
-                newLines.add(line.replace("<version>" + pomVersion + "</version>", "<version>" + newPomVersion + "</version>"));
-            } else {
-                newLines.add(line);
-            }
-        }
-        Files.write(Paths.get("pom.xml"), newLines, StandardCharsets.UTF_8);
     }
 
     public static String getCurrentGitBranch() throws IOException, InterruptedException {

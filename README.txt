@@ -24,7 +24,7 @@ x) feature_merge_close: per chiudere una feature e mergiarla indietro a develop 
     ESEMPIO CHIAMATA:
     mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="feature_merge_close"
 
-x) release_start_close: per portare le modifiche su master passando come parametri, il tipo di modifica alla versione (MAJOR/MINOR/PATCH) e l'attuale versione in develop
+x) release_start_close: per portare le modifiche su master passando come parametri, il tipo di modifica alla versione (MAJOR/MINOR/PATCH)
     +) in automatico verrà mergiato develop in master e verrà modificato il jenkinsfile ed il pom
     +) in automatico verranno aggiunte e committate le modifiche
     +) rimarrà da pushare master
@@ -33,7 +33,6 @@ x) release_start_close: per portare le modifiche su master passando come paramet
     +) rimarrà da pushare develop
     +) rimarrà da pushare i tags: git push origin --tags
     ESEMPIO CHIAMATA:
-    mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="release_start_close MINOR 1.5.0-SNAPSHOT"
     mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="release_start_close MINOR"
 
 
