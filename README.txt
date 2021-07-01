@@ -34,6 +34,7 @@ x) release_start_close: per portare le modifiche su master passando come paramet
     +) rimarrà da pushare i tags: git push origin --tags
     ESEMPIO CHIAMATA:
     mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="release_start_close MINOR 1.5.0-SNAPSHOT"
+    mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="release_start_close MINOR"
 
 
 

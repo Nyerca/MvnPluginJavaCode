@@ -238,7 +238,7 @@ public class GitFlowScript {
         jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
                 .createContext(new Class[]{Project.class}, null);
 
-        File file = new File(String.valueOf(Paths.get("./pippo.xml")));
+        File file = new File(String.valueOf(Paths.get("./pom.xml")));
 
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
