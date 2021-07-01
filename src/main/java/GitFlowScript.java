@@ -19,35 +19,39 @@ import java.util.regex.Pattern;
 public class GitFlowScript {
     public static void main(String[] args) {
 
-        if (args.length > 0) {
+        if (args.length > 1) {
             System.out.println(args[0]);
             GIT_FUN funzione = asMyEnum(args[0]);
             if (funzione != null) {
                 try {
                     switch (funzione) {
                         case feature_start:
-                            if (args.length > 1) {
+                            if(!"master".equals(args[1]) && !"develop".equals(args[1])) {
                                 openFeature(args[1]);
                             } else {
-                                System.out.println("**** INSERIRE IL NOME DELLA FEATURE DA CREARE ****");
+                                System.out.println("**** NOME FEATURE ERRATO ****");
                             }
                             break;
                         case feature_merge:
-                            mergeFeature();
+                            if(!"master".equals(args[1]) && !"develop".equals(args[1])) {
+                                mergeFeature(args[1]);
+                            } else {
+                                System.out.println("**** NOME FEATURE ERRATO ****");
+                            }
                             break;
                         case feature_merge_close:
-                            closeFeature();
+                            if(!"master".equals(args[1]) && !"develop".equals(args[1])) {
+                                closeFeature(args[1]);
+                            } else {
+                                System.out.println("**** NOME FEATURE ERRATO ****");
+                            }
                             break;
                         case release_start_close:
-                            if (args.length > 1) {
-                                RELEASE_TYPE release = asMyEnumRelease(args[1]);
-                                if (release != null) {
-                                    openRelease(release);
-                                } else {
-                                    System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
-                                }
+                            RELEASE_TYPE release = asMyEnumRelease(args[1]);
+                            if (release != null) {
+                                openRelease(release);
                             } else {
-                                System.out.println("**** INSERIRE IL TIPO DI RELEASE DA CREARE E LA VERSIONE DI DEVELOP ****");
+                                System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
                             }
                             break;
                     }
@@ -63,7 +67,7 @@ public class GitFlowScript {
                 System.out.println("**** FUNZIONE INSERITA NON ESISTENTE ****");
             }
         } else {
-            System.out.println("**** INSERIRE IL TIPO DI FUNZIONE DA RICHIAMARE ****");
+            System.out.println("**** INSERIRE IL TIPO DI FUNZIONE DA RICHIAMARE E IL PARAMETRO DELLA RELATIVA FUNZIONE ****");
         }
 
 
@@ -99,7 +103,6 @@ public class GitFlowScript {
     }
 
     public static void openRelease(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
-
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
         String newVersion = readPOMVersion(type);
@@ -115,22 +118,19 @@ public class GitFlowScript {
     }
 
     public static void openFeature(String name) throws IOException, InterruptedException {
-        executeCommand("git checkout -b feature/" + name);
+        executeCommand("git checkout -b feature/" + name + " develop");
         modifyJenkinsfile("feature/" + name);
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
-    public static void mergeFeature() throws IOException, InterruptedException {
-        String name = getCurrentGitBranch();
-        System.out.println("FEATURE: git checkout develop && git merge " + name);
+    public static void mergeFeature(String name) throws IOException, InterruptedException {
         executeCommand("git checkout develop && git merge " + name);
         modifyJenkinsfile("develop");
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
-    public static void closeFeature() throws IOException, InterruptedException {
-        String name = getCurrentGitBranch();
-        mergeFeature();
+    public static void closeFeature(String name) throws IOException, InterruptedException {
+        mergeFeature(name);
         executeCommand("git branch -D " + name);
     }
 
