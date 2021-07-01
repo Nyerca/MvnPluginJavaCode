@@ -1,5 +1,4 @@
 import model.Project;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -21,7 +20,7 @@ public class GitFlowScript {
 
         if (args.length > 1) {
             System.out.println(args[0]);
-            GIT_FUN funzione = asMyEnum(args[0]);
+            GIT_FUN funzione = getFun(args[0]);
             if (funzione != null) {
                 try {
                     switch (funzione) {
@@ -47,7 +46,7 @@ public class GitFlowScript {
                             }
                             break;
                         case release_start_close:
-                            RELEASE_TYPE release = asMyEnumRelease(args[1]);
+                            RELEASE_TYPE release = getReleaseType(args[1]);
                             if (release != null) {
                                 openRelease(release);
                             } else {
@@ -55,22 +54,15 @@ public class GitFlowScript {
                             }
                             break;
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (JAXBException e) {
+                } catch (IOException | InterruptedException | JAXBException e) {
                     e.printStackTrace();
                 }
-
             } else {
                 System.out.println("**** FUNZIONE INSERITA NON ESISTENTE ****");
             }
         } else {
             System.out.println("**** INSERIRE IL TIPO DI FUNZIONE DA RICHIAMARE E IL PARAMETRO DELLA RELATIVA FUNZIONE ****");
         }
-
-
     }
 
     public enum RELEASE_TYPE {
@@ -86,7 +78,12 @@ public class GitFlowScript {
         release_start_close
     }
 
-    public static RELEASE_TYPE asMyEnumRelease(String str) {
+    /**
+     * Metodo che data una stringa ritorna il relativo enumeratore, altrimenti null
+     * @param str Stringa da ricercare
+     * @return
+     */
+    public static RELEASE_TYPE getReleaseType(String str) {
         for (RELEASE_TYPE me : RELEASE_TYPE.values()) {
             if (me.name().equalsIgnoreCase(str))
                 return me;
@@ -94,7 +91,12 @@ public class GitFlowScript {
         return null;
     }
 
-    public static GIT_FUN asMyEnum(String str) {
+    /**
+     * Metodo che data una stringa ritorna il relativo enumeratore, altrimenti null
+     * @param str Stringa da ricercare
+     * @return
+     */
+    public static GIT_FUN getFun(String str) {
         for (GIT_FUN me : GIT_FUN.values()) {
             if (me.name().equalsIgnoreCase(str))
                 return me;
@@ -102,6 +104,13 @@ public class GitFlowScript {
         return null;
     }
 
+    /**
+     * Metodo di apertura di una release
+     * @param type Tipo di release MAJOR|MINOR|PATCH
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws JAXBException
+     */
     public static void openRelease(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
@@ -117,24 +126,48 @@ public class GitFlowScript {
         //git push
     }
 
+    /**
+     * Metodo di apertura di una feature da develop
+     * @param name Nome feature
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void openFeature(String name) throws IOException, InterruptedException {
         executeCommand("git checkout -b feature/" + name + " develop");
         modifyJenkinsfile("feature/" + name);
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
+    /**
+     * Metodo di merge di una feature in develop
+     * @param name Nome feature
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void mergeFeature(String name) throws IOException, InterruptedException {
         executeCommand("git checkout develop && git merge feature/" + name);
         modifyJenkinsfile("develop");
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
+    /**
+     * Metodo di merge di una feature in develop e di eliminazione della feature
+     * @param name Nome feature
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void closeFeature(String name) throws IOException, InterruptedException {
         mergeFeature(name);
         executeCommand("git branch -D feature/" + name);
     }
 
-    public static String findDevelopNewVersion(RELEASE_TYPE type, String oldVersion) {
+    /**
+     * Metodo per calcolare la prossima versione data una versione attuale
+     * @param type Tipo della release MAJOR|MINOR|PATCH
+     * @param oldVersion Vecchia versione nel pom
+     * @return
+     */
+    public static String findNewVersion(RELEASE_TYPE type, String oldVersion) {
         String returnVersion;
         if (oldVersion.contains("-SNAPSHOT")) {
             return oldVersion.split("-SNAPSHOT")[0];
@@ -150,6 +183,12 @@ public class GitFlowScript {
         return returnVersion + "-SNAPSHOT";
     }
 
+    /**
+     * Metodo di esecuzione di un comando su bat o sh
+     * @param command Comando da eseguire
+     * @throws IOException
+     * @throws InterruptedException
+     */
     public static void executeCommand(String command) throws IOException, InterruptedException {
         boolean isWindows = System.getProperty("os.name")
                 .toLowerCase().startsWith("windows");
@@ -164,6 +203,11 @@ public class GitFlowScript {
         printResults(process);
     }
 
+    /**
+     * Metodo per aggiornare il Jenkinsfile
+     * @param branch Branch da inserire
+     * @throws IOException
+     */
     public static void modifyJenkinsfile(String branch) throws IOException {
         List<String> newLines = new ArrayList<String>();
 
@@ -181,16 +225,11 @@ public class GitFlowScript {
         Files.write(Paths.get("Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
     }
 
-    public static String getCurrentGitBranch() throws IOException, InterruptedException {
-        Process process = Runtime.getRuntime().exec("git rev-parse --abbrev-ref HEAD");
-        process.waitFor();
-
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(process.getInputStream()));
-
-        return reader.readLine();
-    }
-
+    /**
+     * Metodo per fare la print del return di un processo lanciato
+     * @param process
+     * @throws IOException
+     */
     public static void printResults(Process process) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line = "";
@@ -199,6 +238,13 @@ public class GitFlowScript {
         }
     }
 
+    /**
+     * Metodo per leggere e fare l'update della versione nel pom
+     * @param type Tipo della release MAJOR|MINOR|PATCH
+     * @return La nuova versione calcoalta
+     * @throws IOException
+     * @throws JAXBException
+     */
     public static String readPOMVersion(RELEASE_TYPE type) throws IOException, JAXBException {
         JAXBContext jaxbContext;
         jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
@@ -218,7 +264,7 @@ public class GitFlowScript {
         jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
 
-        String newPomVersion = findDevelopNewVersion(type, o.version);
+        String newPomVersion = findNewVersion(type, o.version);
         o.version = newPomVersion;
         System.out.println("NEW_VERSION:" + o.version);
 
