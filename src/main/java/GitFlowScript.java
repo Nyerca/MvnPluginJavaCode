@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 public class GitFlowScript {
     public static void main(String[] args) {
+        /*
         try {
             //openFeature("test");
             //closeFeature();
@@ -21,6 +22,51 @@ public class GitFlowScript {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        */
+        if(args.length > 0) {
+            System.out.println(args[0]);
+            GIT_FUN funzione = asMyEnum(args[0]);
+            if(funzione != null) {
+                try {
+                switch(funzione) {
+                    case feature_start:
+                        if(args.length > 1) {
+                            openFeature(args[1]);
+                        } else {
+                            System.out.println("**** INSERIRE IL NOME DELLA FEATURE DA CREARE ****");
+                        }
+                        break;
+                    case feature_merge:
+                        mergeFeature();
+                        break;
+                    case feature_merge_close:
+                        closeFeature();
+                        break;
+                    case release_start_close:
+                        if(args.length > 2) {
+                            RELEASE_TYPE release = asMyEnumRelease(args[1]);
+                            if(release != null) {
+                                openRelease(release, args[2]);
+                            } else {
+                                System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
+                            }
+                        } else {
+                            System.out.println("**** INSERIRE IL TIPO DI RELEASE DA CREARE E LA VERSIONE DI DEVELOP ****");
+                        }
+                        break;
+                }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                System.out.println("**** FUNZIONE INSERITA NON ESISTENTE ****");
+            }
+        } else {
+            System.out.println("**** INSERIRE IL TIPO DI FUNZIONE DA RICHIAMARE ****");
+        }
+
 
     }
 
@@ -28,6 +74,29 @@ public class GitFlowScript {
         MAJOR,
         MINOR,
         PATCH
+    }
+
+    public enum GIT_FUN {
+        feature_start,
+        feature_merge,
+        feature_merge_close,
+        release_start_close
+    }
+
+    public static RELEASE_TYPE asMyEnumRelease(String str) {
+        for (RELEASE_TYPE me : RELEASE_TYPE.values()) {
+            if (me.name().equalsIgnoreCase(str))
+                return me;
+        }
+        return null;
+    }
+
+    public static GIT_FUN asMyEnum(String str) {
+        for (GIT_FUN me : GIT_FUN.values()) {
+            if (me.name().equalsIgnoreCase(str))
+                return me;
+        }
+        return null;
     }
 
     public static void openRelease(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException {
