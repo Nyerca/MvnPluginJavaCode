@@ -24,10 +24,11 @@ public class GitFlowScript {
         try {
             //openFeature("test");
             //closeFeature();
-            readPOMVersion("1.1.20-SNAPSHOT", "MIAO");
+            //readPOMVersion("1.1.20-SNAPSHOT", "MIAO");
+            openRelease(RELEASE_TYPE.MINOR, "1.1.20-SNAPSHOT");
         } catch (IOException e) {
             e.printStackTrace();
-        } //catch (InterruptedException e) {e.printStackTrace(); }
+        } catch (InterruptedException e) {e.printStackTrace(); }
 
     }
 
