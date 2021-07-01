@@ -15,7 +15,7 @@ x) feature_close: per chiudere una feature e mergiarla indietro a develop
     +) rimarrà da pushare la develop
     +) rimarrà da eliminare la branch di feature
     ESEMPIO CHIAMATA:
-    mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="feature_close"
+    mvn exec:java -Dexec.mainClass="GitFlowScript" -Dexec.args="feature_merge"
 
 x) feature_merge_close: per chiudere una feature e mergiarla indietro a develop e in seguito eliminare la feature
     +) In automatico effettua il merge della feature su develop e modifica il jenkinsfile
