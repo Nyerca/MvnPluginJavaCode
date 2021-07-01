@@ -11,6 +11,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 public class GitFlowScript {
     public static void main(String[] args) {
@@ -147,4 +154,35 @@ public class GitFlowScript {
         }
         Files.write(Paths.get("pom.xml"), newLines, StandardCharsets.UTF_8);
     }
+
+
+    /*
+    public static void readPOMVersion(String newPomVersion) throws IOException {
+        JAXBContext jaxbContext;
+        try {jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
+                .createContext(new Class[]{Project.class}, null);
+
+            File file = new File(String.valueOf(Paths.get("./pippo.xml")));
+
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+            Project o = (Project) jaxbUnmarshaller.unmarshal(file);
+
+            System.out.println("OLD_VERSION:" + o.version);
+
+            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+            o.version = newPomVersion;
+            System.out.println("NEW_VERSION:" + o.version);
+
+            // output to a xml file
+            jaxbMarshaller.marshal(o, file);
+
+        } catch (JAXBException e) {
+            e.printStackTrace();
+        }
+    }
+    */
 }
