@@ -124,14 +124,14 @@ public class GitFlowScript {
     }
 
     public static void mergeFeature(String name) throws IOException, InterruptedException {
-        executeCommand("git checkout develop && git merge " + name);
+        executeCommand("git checkout develop && git merge feature/" + name);
         modifyJenkinsfile("develop");
         executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
     public static void closeFeature(String name) throws IOException, InterruptedException {
         mergeFeature(name);
-        executeCommand("git branch -D " + name);
+        executeCommand("git branch -D feature/" + name);
     }
 
     public static String findDevelopNewVersion(RELEASE_TYPE type, String oldVersion) {
