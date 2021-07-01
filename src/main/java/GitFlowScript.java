@@ -59,6 +59,7 @@ public class GitFlowScript {
     public static void openRelease(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException {
         String masterVersion = devVersion.split("-SNAPSHOT")[0];
         String newDevVersion = findDevelopNewVersion(type, devVersion);
+        System.out.println("MASTER_V: " + masterVersion + " DEV_V: " + newDevVersion);
 
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
