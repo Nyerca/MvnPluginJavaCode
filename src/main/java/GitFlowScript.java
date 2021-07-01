@@ -72,7 +72,7 @@ public class GitFlowScript {
         executeCommand("git checkout develop && git merge master");
         modifyJenkinsfile("develop");
         //READ & MODIFY pom(newDevVersion)
-        readPOMVersion(devVersion, newDevVersion);
+        readPOMVersion(masterVersion, newDevVersion);
         executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
         //git push
     }
