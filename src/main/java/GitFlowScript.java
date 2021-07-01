@@ -1,3 +1,5 @@
+import model.Project;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,21 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Paths;
 
 public class GitFlowScript {
     public static void main(String[] args) {
-        /*
-        try {
-            //openFeature("test");
-            //closeFeature();
-            //readPOMVersion("1.1.20-SNAPSHOT", "MIAO");
-            openRelease(RELEASE_TYPE.MINOR, "1.4.0-SNAPSHOT");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
+
         if(args.length > 0) {
             System.out.println(args[0]);
             GIT_FUN funzione = asMyEnum(args[0]);
@@ -46,7 +44,7 @@ public class GitFlowScript {
                         if(args.length > 2) {
                             RELEASE_TYPE release = asMyEnumRelease(args[1]);
                             if(release != null) {
-                                openRelease(release, args[2]);
+                                openRelease2(release, args[2]);
                             } else {
                                 System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
                             }
@@ -59,7 +57,10 @@ public class GitFlowScript {
                     e.printStackTrace();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                } catch (JAXBException e) {
+                    e.printStackTrace();
                 }
+
             } else {
                 System.out.println("**** FUNZIONE INSERITA NON ESISTENTE ****");
             }
@@ -118,6 +119,22 @@ public class GitFlowScript {
         //git push
     }
 
+    public static void openRelease2(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException, JAXBException {
+
+        executeCommand("git checkout master && git merge develop");
+        modifyJenkinsfile("master");
+        String newVersion = readPOMVersion(type);
+        executeCommand("git add . && git commit -m \"Avvio release " + newVersion + "\"");
+        executeCommand("git tag " + newVersion + " -m \"Release: " + newVersion + "\"");
+        //git push origin --tags
+        //git push
+        executeCommand("git checkout develop && git merge master");
+        modifyJenkinsfile("develop");
+        readPOMVersion(type);
+        executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
+        //git push
+    }
+
     public static void openFeature(String name) throws IOException, InterruptedException {
         executeCommand("git checkout -b feature/" + name);
         modifyJenkinsfile("feature/" + name);
@@ -140,8 +157,10 @@ public class GitFlowScript {
 
     public static String findDevelopNewVersion(RELEASE_TYPE type, String oldVersion) {
         String returnVersion;
+        if(oldVersion.contains("-SNAPSHOT")) {
+            return oldVersion.split("-SNAPSHOT")[0];
+        }
         String[] splitted = oldVersion.split("\\.");
-
         if (RELEASE_TYPE.MAJOR.equals(type)) {
             returnVersion = (Integer.parseInt(splitted[0]) + 1) + ".0.0";
         } else if (RELEASE_TYPE.MINOR.equals(type)) {
@@ -212,5 +231,33 @@ public class GitFlowScript {
         while ((line = reader.readLine()) != null) {
             System.out.println(line);
         }
+    }
+
+    public static String readPOMVersion(RELEASE_TYPE type) throws IOException, JAXBException {
+        JAXBContext jaxbContext;
+        jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
+                .createContext(new Class[]{Project.class}, null);
+
+        File file = new File(String.valueOf(Paths.get("./pippo.xml")));
+
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+
+        Project o = (Project) jaxbUnmarshaller.unmarshal(file);
+
+        System.out.println("OLD_VERSION:" + o.version);
+
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd");
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
+
+        String newPomVersion = findDevelopNewVersion(type, o.version);
+        o.version = newPomVersion;
+        System.out.println("NEW_VERSION:" + o.version);
+
+        // output to a xml file
+        jaxbMarshaller.marshal(o, file);
+        return o.version;
     }
 }
