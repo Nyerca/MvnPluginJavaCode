@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>testgitflow</groupId>
    <artifactId>test</artifactId>
-   <version>1.8.2-SNAPSHOT</version>
+   <version>1.8.2</version>
    <dependencies>
       <dependency>
          <groupId>org.eclipse.persistence</groupId>
