@@ -41,10 +41,10 @@ public class GitFlowScript {
                         closeFeature();
                         break;
                     case release_start_close:
-                        if(args.length > 2) {
+                        if(args.length > 1) {
                             RELEASE_TYPE release = asMyEnumRelease(args[1]);
                             if(release != null) {
-                                openRelease2(release, args[2]);
+                                openRelease2(release);
                             } else {
                                 System.out.println("**** TIPO RELEASE NON ESISTENTE ****");
                             }
@@ -119,7 +119,7 @@ public class GitFlowScript {
         //git push
     }
 
-    public static void openRelease2(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException, JAXBException {
+    public static void openRelease2(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
 
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
