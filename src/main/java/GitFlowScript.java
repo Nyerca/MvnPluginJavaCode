@@ -17,12 +17,10 @@ public class GitFlowScript {
         try {
             //openFeature("test");
             //closeFeature();
-            executeCommand("git push");
+            readPOMVersion("1.1.20-SNAPSHOT", "MIAO");
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        } //catch (InterruptedException e) {e.printStackTrace(); }
 
     }
 
@@ -44,19 +42,44 @@ public class GitFlowScript {
         }
     }
 
-    public static void openRelease(String version) throws IOException, InterruptedException {
+    public enum RELEASE_TYPE {
+        MAJOR,
+        MINOR,
+        PATCH
+    }
+
+    public static void openRelease(RELEASE_TYPE type, String devVersion) throws IOException, InterruptedException {
+        String masterVersion = devVersion.split("-SNAPSHOT")[0];
+        String newDevVersion = findDevelopNewVersion(type, devVersion);
+
         executeCommand("git checkout master && git merge develop");
         modifyJenkinsfile("master");
-        //MODIFY pom(TAG)
-        executeCommand("git add . && git commit -m \"Avvio release " + version +"\"");
-        executeCommand("git tag " + version + " -m \"Release: " + version +"\"");
+        //READ & MODIFY pom(masterVersion)
+        readPOMVersion(devVersion, masterVersion);
+        executeCommand("git add . && git commit -m \"Avvio release " + masterVersion +"\"");
+        executeCommand("git tag " + masterVersion + " -m \"Release: " + masterVersion +"\"");
         //git push origin --tags
         //git push
         executeCommand("git checkout develop && git merge master");
         modifyJenkinsfile("develop");
-        //MODIFY pom(TAG)
+        //READ & MODIFY pom(newDevVersion)
+        readPOMVersion(devVersion, newDevVersion);
         executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
         //git push
+    }
+
+    public static String findDevelopNewVersion(RELEASE_TYPE type, String oldVersion) {
+        String returnVersion;
+        String[] splitted = oldVersion.split("\\.");
+
+        if(RELEASE_TYPE.MAJOR.equals(type)) {
+            returnVersion = (Integer.parseInt(splitted[0]) + 1) + ".0.0";
+        } else if(RELEASE_TYPE.MINOR.equals(type)) {
+            returnVersion = splitted[0] + "." + (Integer.parseInt(splitted[1]) + 1) + ".0";
+        } else {
+            returnVersion =splitted[0] + "." +splitted[1] +"." + (Integer.parseInt(splitted[2]) + 1);
+        }
+        return returnVersion + "-SNAPSHOT";
     }
 
 
@@ -93,45 +116,6 @@ public class GitFlowScript {
         int exitCode = process.waitFor();
         printResults(process);
     }
-/*
-    static CompletableFuture<String> readOutStream(InputStream is) {
-        return CompletableFuture.supplyAsync(() -> {
-            try (
-                    InputStreamReader isr = new InputStreamReader(is);
-                    BufferedReader br = new BufferedReader(isr);
-            ) {
-                StringBuilder res = new StringBuilder();
-                String inputLine;
-                while ((inputLine = br.readLine()) != null) {
-                    res.append(inputLine).append(System.lineSeparator());
-                }
-                return res.toString();
-            } catch (Throwable e) {
-                throw new RuntimeException("problem with executing program", e);
-            }
-        });
-    }
-
-    public static void executeFutureCommand(String command) throws IOException, InterruptedException {
-        Process p = Runtime.getRuntime().exec(command);
-        CompletableFuture<String> soutFut = readOutStream(p.getInputStream());
-        CompletableFuture<String> serrFut = readOutStream(p.getErrorStream());
-        CompletableFuture<String> resultFut =
-                soutFut.thenCombine(serrFut, (stdout, stderr) -> {
-                    // print to current stderr the stderr of process and return the stdout
-                    System.err.println(stderr);
-
-                    return stdout;
-                });
-// get stdout once ready, blocking
-        try {
-            String result = resultFut.get();
-            System.out.println(result);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-*/
 
     public static void modifyJenkinsfile(String branch) throws IOException {
         List<String> newLines = new ArrayList<String>();
@@ -148,5 +132,19 @@ public class GitFlowScript {
             }
         }
         Files.write(Paths.get("Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
+    }
+
+
+    public static void readPOMVersion(String pomVersion, String newPomVersion) throws IOException {
+        List<String> newLines = new ArrayList<String>();
+
+        for (String line : Files.readAllLines(Paths.get("pom.xml"), StandardCharsets.UTF_8)) {
+            if(line.contains("<version>" + pomVersion + "</version>")) {
+                newLines.add(line.replace("<version>" + pomVersion + "</version>", "<version>" + newPomVersion + "</version>"));
+            } else {
+                newLines.add(line);
+            }
+        }
+        Files.write(Paths.get("pom.xml"), newLines, StandardCharsets.UTF_8);
     }
 }
