@@ -1,4 +1,6 @@
-import model.Project;
+package it.imola.gitflow;
+
+import it.imola.gitflow.model.Project;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
