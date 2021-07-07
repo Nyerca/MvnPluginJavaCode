@@ -37,3 +37,8 @@ x) release_start_close: per portare le modifiche su master passando come paramet
 
 
 
+ESECUZIONE JAR
+per lanciare il jar
+java -jar path/to/jar.jar arg[0] arg[1] arg[2]
+
+
