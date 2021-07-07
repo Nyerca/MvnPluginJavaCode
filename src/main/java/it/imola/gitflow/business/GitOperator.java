@@ -34,6 +34,7 @@ public class GitOperator {
     public void executeFun(GIT_FUN funzione, String argument, String path){
         CommandManager.getInstance().setProjectFolder(path);
         PomManager.getInstance().setProjectFolder(path);
+        JenkinsfileManager.getInstance().setProjectFolder(path);
         if (funzione != null) {
             try {
                 switch (funzione) {
