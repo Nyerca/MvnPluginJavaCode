@@ -1,7 +1,5 @@
 package it.imola.gitflow.model;
 
-import it.imola.gitflow.GitFlowScript;
-
 public enum RELEASE_TYPE {
     MAJOR,
     MINOR,
@@ -12,8 +10,8 @@ public enum RELEASE_TYPE {
      * @param str Stringa da ricercare
      * @return
      */
-    public static GitFlowScript.RELEASE_TYPE getReleaseType(String str) {
-        for (GitFlowScript.RELEASE_TYPE me : GitFlowScript.RELEASE_TYPE.values()) {
+    public static RELEASE_TYPE getReleaseType(String str) {
+        for (RELEASE_TYPE me : RELEASE_TYPE.values()) {
             if (me.name().equalsIgnoreCase(str))
                 return me;
         }

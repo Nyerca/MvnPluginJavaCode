@@ -13,8 +13,8 @@ public enum GIT_FUN {
      * @param str Stringa da ricercare
      * @return
      */
-    public static GitFlowScript.GIT_FUN getFun(String str) {
-        for (GitFlowScript.GIT_FUN me : GitFlowScript.GIT_FUN.values()) {
+    public static GIT_FUN getFun(String str) {
+        for (GIT_FUN me : GIT_FUN.values()) {
             if (me.name().equalsIgnoreCase(str))
                 return me;
         }
