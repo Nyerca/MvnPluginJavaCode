@@ -1,6 +1,8 @@
 package it.imola.gitflow.business;
 
 import it.imola.gitflow.integration.CommandManager;
+import it.imola.gitflow.integration.JenkinsfileManager;
+import it.imola.gitflow.integration.PomManager;
 import it.imola.gitflow.model.GIT_FUN;
 import it.imola.gitflow.model.Project;
 import it.imola.gitflow.model.RELEASE_TYPE;
@@ -29,87 +31,9 @@ public class GitOperator {
 
     }
 
-    /**
-     * Metodo per calcolare la prossima versione data una versione attuale
-     * @param type Tipo della release MAJOR|MINOR|PATCH
-     * @param oldVersion Vecchia versione nel pom
-     * @return
-     */
-    public String findNewVersion(RELEASE_TYPE type, String oldVersion) {
-        String returnVersion;
-        if (oldVersion.contains("-SNAPSHOT")) {
-            return oldVersion.split("-SNAPSHOT")[0];
-        }
-        String[] splitted = oldVersion.split("\\.");
-        if (RELEASE_TYPE.MAJOR.equals(type)) {
-            returnVersion = (Integer.parseInt(splitted[0]) + 1) + ".0.0";
-        } else if (RELEASE_TYPE.MINOR.equals(type)) {
-            returnVersion = splitted[0] + "." + (Integer.parseInt(splitted[1]) + 1) + ".0";
-        } else {
-            returnVersion = splitted[0] + "." + splitted[1] + "." + (Integer.parseInt(splitted[2]) + 1);
-        }
-        return returnVersion + "-SNAPSHOT";
-    }
-
-    /**
-     * Metodo per aggiornare il Jenkinsfile
-     * @param branch Branch da inserire
-     * @throws IOException
-     */
-    public void modifyJenkinsfile(String branch) throws IOException {
-        List<String> newLines = new ArrayList<String>();
-
-        for (String line : Files.readAllLines(Paths.get("Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
-            if (line.contains("mpl")) {
-
-                Pattern p = Pattern.compile("mpl@\\S*'", Pattern.CASE_INSENSITIVE);
-                Matcher m = p.matcher(line);
-                String result = m.replaceAll("mpl@" + branch + "'");
-                newLines.add(result);
-            } else {
-                newLines.add(line);
-            }
-        }
-        Files.write(Paths.get("Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
-    }
-
-
-    /**
-     * Metodo per leggere e fare l'update della versione nel pom
-     * @param type Tipo della release MAJOR|MINOR|PATCH
-     * @return La nuova versione calcoalta
-     * @throws IOException
-     * @throws JAXBException
-     */
-    public String readPOMVersion(RELEASE_TYPE type) throws IOException, JAXBException {
-        JAXBContext jaxbContext;
-        jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
-                .createContext(new Class[]{Project.class}, null);
-
-        File file = new File(String.valueOf(Paths.get("./pom.xml")));
-
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-
-        Project o = (Project) jaxbUnmarshaller.unmarshal(file);
-
-        System.out.println("OLD_VERSION:" + o.version);
-
-        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-
-        jaxbMarshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, "http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd");
-        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-        jaxbMarshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
-
-        String newPomVersion = findNewVersion(type, o.version);
-        o.version = newPomVersion;
-        System.out.println("NEW_VERSION:" + o.version);
-
-        // output to a xml file
-        jaxbMarshaller.marshal(o, file);
-        return o.version;
-    }
-
-    public void executeFun(GIT_FUN funzione, String argument){
+    public void executeFun(GIT_FUN funzione, String argument, String path){
+        CommandManager.getInstance().setProjectFolder(path);
+        PomManager.getInstance().setProjectFolder(path);
         if (funzione != null) {
             try {
                 switch (funzione) {
@@ -160,15 +84,15 @@ public class GitOperator {
      */
     public void openRelease(RELEASE_TYPE type) throws IOException, InterruptedException, JAXBException {
         CommandManager.getInstance().executeCommand("git checkout master && git merge develop");
-        modifyJenkinsfile("master");
-        String newVersion = readPOMVersion(type);
+        JenkinsfileManager.getInstance().modifyJenkinsfile("master");
+        String newVersion = PomManager.getInstance().readPOMVersion(type);
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Avvio release " + newVersion + "\"");
         CommandManager.getInstance().executeCommand("git tag " + newVersion + " -m \"Release: " + newVersion + "\"");
         //git push origin --tags
         //git push
         CommandManager.getInstance().executeCommand("git checkout develop && git merge master");
-        modifyJenkinsfile("develop");
-        readPOMVersion(type);
+        JenkinsfileManager.getInstance().modifyJenkinsfile("develop");
+        PomManager.getInstance().readPOMVersion(type);
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Merge con master e aggiornamento versione\"");
         //git push
     }
@@ -181,7 +105,7 @@ public class GitOperator {
      */
     public void openFeature(String name) throws IOException, InterruptedException {
         CommandManager.getInstance().executeCommand("git checkout -b feature/" + name + " develop");
-        modifyJenkinsfile("feature/" + name);
+        JenkinsfileManager.getInstance().modifyJenkinsfile("feature/" + name);
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
@@ -193,7 +117,7 @@ public class GitOperator {
      */
     public void mergeFeature(String name) throws IOException, InterruptedException {
         CommandManager.getInstance().executeCommand("git checkout develop && git merge feature/" + name);
-        modifyJenkinsfile("develop");
+        JenkinsfileManager.getInstance().modifyJenkinsfile("develop");
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
@@ -206,6 +130,8 @@ public class GitOperator {
     public void closeFeature(String name) throws IOException, InterruptedException {
         mergeFeature(name);
         CommandManager.getInstance().executeCommand("git branch -D feature/" + name);
+        //CommandManager.getInstance().executeCommand("cd C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow && dir");
+        //CommandManager.getInstance().executeCommand("dir");
     }
 
 }

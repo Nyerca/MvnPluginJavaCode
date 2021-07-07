@@ -6,10 +6,15 @@ import java.io.InputStreamReader;
 
 public class CommandManager {
     private static CommandManager commandManager;
+    private String projectFolder;
     private boolean isWindows;
 
     private CommandManager() {
         isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+    }
+
+    public void setProjectFolder(String projectFolder) {
+        this.projectFolder = projectFolder;
     }
 
     public static CommandManager getInstance() {
@@ -27,6 +32,7 @@ public class CommandManager {
      */
     public void executeCommand(String command) throws IOException, InterruptedException {
         ProcessBuilder builder = new ProcessBuilder().inheritIO();
+        command = projectFolder != null ? "cd " + projectFolder + " && " + command : command;
         if (isWindows) {
             builder.command("cmd.exe", "/c", command);
         } else {
@@ -50,4 +56,6 @@ public class CommandManager {
             System.out.println(line);
         }
     }
+
+
 }
