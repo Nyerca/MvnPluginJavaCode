@@ -31,6 +31,27 @@ public class GitOperator {
 
     }
 
+    /**
+     * Metodo per aggiornare il Jenkinsfile
+     * @param branch Branch da inserire
+     * @throws IOException
+     */
+    public void modifyJenkinsfile(String branch) throws IOException {
+        List<String> newLines = new ArrayList<String>();
+
+        for (String line : Files.readAllLines(Paths.get("C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow\\Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
+            if (line.contains("mpl")) {
+                Pattern p = Pattern.compile("mpl@\\S*'", Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(line);
+                String result = m.replaceAll("mpl@" + branch + "'");
+                newLines.add(result);
+            } else {
+                newLines.add(line);
+            }
+        }
+        Files.write(Paths.get("C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow\\Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
+    }
+
     public void executeFun(GIT_FUN funzione, String argument, String path){
         CommandManager.getInstance().setProjectFolder(path);
         PomManager.getInstance().setProjectFolder(path);
@@ -106,7 +127,7 @@ public class GitOperator {
      */
     public void openFeature(String name) throws IOException, InterruptedException {
         CommandManager.getInstance().executeCommand("git checkout -b feature/" + name + " develop");
-        JenkinsfileManager.getInstance().modifyJenkinsfile("feature/" + name);
+        modifyJenkinsfile("feature/" + name);
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
@@ -118,7 +139,7 @@ public class GitOperator {
      */
     public void mergeFeature(String name) throws IOException, InterruptedException {
         CommandManager.getInstance().executeCommand("git checkout develop && git merge feature/" + name);
-        JenkinsfileManager.getInstance().modifyJenkinsfile("develop");
+        modifyJenkinsfile("develop");
         CommandManager.getInstance().executeCommand("git add . && git commit -m \"Modifica branch nel Jenkinsfile\"");
     }
 
