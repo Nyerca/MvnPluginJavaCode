@@ -65,7 +65,7 @@ public class PomManager {
         jaxbContext = org.eclipse.persistence.jaxb.JAXBContextFactory
                 .createContext(new Class[]{Project.class}, null);
 
-        File file = new File(String.valueOf(Paths.get("./pom.xml")));
+        File file = new File(String.valueOf(Paths.get(projectFolder + "/pom.xml")));
 
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
