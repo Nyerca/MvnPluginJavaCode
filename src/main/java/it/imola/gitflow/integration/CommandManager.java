@@ -18,7 +18,7 @@ public class CommandManager {
     }
 
     public static CommandManager getInstance() {
-        if(null == commandManager) {
+        if (null == commandManager) {
             commandManager = new CommandManager();
         }
         return commandManager;
@@ -26,6 +26,7 @@ public class CommandManager {
 
     /**
      * Metodo di esecuzione di un comando su bat o sh
+     *
      * @param command Comando da eseguire
      * @throws IOException
      * @throws InterruptedException
@@ -46,6 +47,7 @@ public class CommandManager {
 
     /**
      * Metodo per fare la print del return di un processo lanciato
+     *
      * @param process
      * @throws IOException
      */

@@ -7,6 +7,7 @@ public enum RELEASE_TYPE {
 
     /**
      * Metodo che data una stringa ritorna il relativo enumeratore, altrimenti null
+     *
      * @param str Stringa da ricercare
      * @return
      */

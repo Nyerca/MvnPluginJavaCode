@@ -1,20 +1,7 @@
 package it.imola.gitflow.presentation;
 
 import it.imola.gitflow.business.GitOperator;
-import it.imola.gitflow.integration.CommandManager;
-import it.imola.gitflow.integration.JenkinsfileManager;
 import it.imola.gitflow.model.GIT_FUN;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static it.imola.gitflow.model.GIT_FUN.getFun;
 

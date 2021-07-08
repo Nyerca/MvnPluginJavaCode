@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 public class PomManager {
     private static PomManager pomManager;
     private String projectFolder;
-    private boolean isWindows;
 
     private PomManager() {
 
@@ -25,7 +24,7 @@ public class PomManager {
     }
 
     public static PomManager getInstance() {
-        if(null == pomManager) {
+        if (null == pomManager) {
             pomManager = new PomManager();
         }
         return pomManager;
@@ -33,7 +32,8 @@ public class PomManager {
 
     /**
      * Metodo per calcolare la prossima versione data una versione attuale
-     * @param type Tipo della release MAJOR|MINOR|PATCH
+     *
+     * @param type       Tipo della release MAJOR|MINOR|PATCH
      * @param oldVersion Vecchia versione nel pom
      * @return
      */
@@ -55,6 +55,7 @@ public class PomManager {
 
     /**
      * Metodo per leggere e fare l'update della versione nel pom
+     *
      * @param type Tipo della release MAJOR|MINOR|PATCH
      * @return La nuova versione calcoalta
      * @throws IOException
