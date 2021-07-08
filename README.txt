@@ -41,5 +41,6 @@ ESECUZIONE JAR
 per lanciare il jar
 java -jar path/to/jar.jar arg[0] arg[1] arg[2]
 java -jar gitflow-1.8.4-SNAPSHOT.jar feature_merge_close tmpFeature
+java -jar gitflow-1.8.4-SNAPSHOT.jar feature_start tmpFeature C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow
 java -jar gitflow-1.8.4-SNAPSHOT.jar feature_merge_close tmpFeature C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow
 
