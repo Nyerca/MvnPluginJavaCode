@@ -1,10 +1,20 @@
 package it.imola.gitflow.presentation;
 
 import it.imola.gitflow.business.GitOperator;
+import it.imola.gitflow.integration.CommandManager;
+import it.imola.gitflow.integration.JenkinsfileManager;
 import it.imola.gitflow.model.GIT_FUN;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static it.imola.gitflow.model.GIT_FUN.getFun;
 
@@ -19,5 +29,35 @@ public class ApplicationRunner {
         } else {
             System.out.println("**** INSERIRE IL TIPO DI FUNZIONE DA RICHIAMARE E IL PARAMETRO DELLA RELATIVA FUNZIONE ****");
         }
+
+
+
+/*
+        List<String> newLines = new ArrayList<String>();
+
+        try {
+            for (String line : Files.readAllLines(Paths.get("C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow\\Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
+                if (line.contains("mpl")) {
+                    Pattern p = Pattern.compile("mpl@\\S*'", Pattern.CASE_INSENSITIVE);
+                    Matcher m = p.matcher(line);
+                    String result = m.replaceAll("mpl@develop"  + "'");
+                    newLines.add(result);
+                } else {
+                    newLines.add(line);
+                }
+            }
+            CommandManager.getInstance().setProjectFolder(args[2]);
+            try {
+                CommandManager.getInstance().executeCommand("whoami");
+                CommandManager.getInstance().executeCommand("echo ciao22 > ciao2.txt");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Files.write(Paths.get("C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow\\ciao.txt"), newLines, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+*/
+
     }
 }
