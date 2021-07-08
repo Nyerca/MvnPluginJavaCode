@@ -1,4 +1,4 @@
-Il file java: it.imola.gitflow.GitFlowScript è stato realizzato a supporto delle operazioni da effettuare con git
+Il file java: "it.imola.gitflow.presentation.ApplicationRunner" è stato realizzato a supporto delle operazioni da effettuare con git
 in particolare per automatizzare la modifica del Jenkinsfile inserendo la branch corretta.
 
 Di seguito verranno elencate le 4 operazioni supportate:
@@ -41,7 +41,7 @@ x) release_start_close: per portare le modifiche su master passando come paramet
     ESEMPIO CHIAMATA JAR:
     java -jar gitflow-1.8.4-SNAPSHOT.jar release_start_close MINOR C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow
     ESEMPIO CHIAMATA:
-    mvn exec:java -Dexec.mainClass="it.imola.gitflow.GitFlowScript" -Dexec.args="release_start_close MINOR C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow"
+    mvn exec:java -Dexec.mainClass="it.imola.gitflow.presentation.ApplicationRunner" -Dexec.args="release_start_close MINOR C:\\Users\\UTENTE\\Desktop\\testJGitFlow\\jgitflow"
 
 
 

@@ -10,6 +10,7 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 import static it.imola.gitflow.model.RELEASE_TYPE.getReleaseType;
+import static it.imola.gitflow.model.Constants.*;
 
 
 public class GitOperator {
@@ -26,21 +27,21 @@ public class GitOperator {
             try {
                 switch (funzione) {
                     case feature_start:
-                        if (!"master".equals(argument) && !"develop".equals(argument)) {
+                        if (!MASTER.equals(argument) && !DEVELOP.equals(argument)) {
                             openFeature(argument);
                         } else {
                             System.out.println("**** NOME FEATURE ERRATO ****");
                         }
                         break;
                     case feature_merge:
-                        if (!"master".equals(argument) && !"develop".equals(argument)) {
+                        if (!MASTER.equals(argument) && !DEVELOP.equals(argument)) {
                             mergeFeature(argument);
                         } else {
                             System.out.println("**** NOME FEATURE ERRATO ****");
                         }
                         break;
                     case feature_merge_close:
-                        if (!"master".equals(argument) && !"develop".equals(argument)) {
+                        if (!MASTER.equals(argument) && !DEVELOP.equals(argument)) {
                             closeFeature(argument);
                         } else {
                             System.out.println("**** NOME FEATURE ERRATO ****");
