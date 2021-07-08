@@ -37,7 +37,7 @@ public class JenkinsfileManager {
     public void modifyJenkinsfile(String branch) throws IOException {
         List<String> newLines = new ArrayList<String>();
 
-        for (String line : Files.readAllLines(Paths.get(projectFolder + "\\Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
+        for (String line : Files.readAllLines(Paths.get(projectFolder + "/Jenkinsfile.txt"), StandardCharsets.UTF_8)) {
             if (line.contains("mpl")) {
                 Pattern p = Pattern.compile("mpl@\\S*'", Pattern.CASE_INSENSITIVE);
                 Matcher m = p.matcher(line);
@@ -47,6 +47,6 @@ public class JenkinsfileManager {
                 newLines.add(line);
             }
         }
-        Files.write(Paths.get(projectFolder + "\\Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
+        Files.write(Paths.get(projectFolder + "/Jenkinsfile.txt"), newLines, StandardCharsets.UTF_8);
     }
 }
