@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>testgitflow</groupId>
    <artifactId>gitflow</artifactId>
-   <version>1.8.4-SNAPSHOT</version>
+   <version>1.8.4</version>
    <dependencies>
       <dependency>
          <groupId>org.eclipse.persistence</groupId>
@@ -20,7 +20,6 @@
                <target>8</target>
             </configuration>
          </plugin>
-         <!-- Plugin per FatJAR-->
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-shade-plugin</artifactId>
